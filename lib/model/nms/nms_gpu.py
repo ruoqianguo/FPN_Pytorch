@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from _ext import nms
+from ._ext import nms
 import pdb
 
 def nms_gpu(dets, thresh):

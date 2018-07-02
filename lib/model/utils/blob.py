@@ -10,7 +10,10 @@
 import numpy as np
 #from scipy.misc import imread, imresize
 import cv2
-
+try:
+    xrange  # Python 2
+except NameError:
+    xrange = range  # Python 3
 
 
 def im_list_to_blob(ims):

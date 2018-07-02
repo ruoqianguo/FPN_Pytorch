@@ -14,10 +14,9 @@ import sys
 import numpy as np
 import argparse
 import pprint
-import pdb
 import time
 import cv2
-import cPickle
+import pickle
 import torch
 from torch.autograd import Variable
 import torch.nn as nn
@@ -30,10 +29,15 @@ from model.rpn.bbox_transform import clip_boxes
 from model.nms.nms_wrapper import nms
 from model.rpn.bbox_transform import bbox_transform_inv
 from model.utils.net_utils import vis_detections
-
 from model.fpn.resnet import resnet
 
 import pdb
+
+try:
+    xrange  # Python 2
+except NameError:
+    xrange = range  # Python 3
+
 
 def parse_args():
   """
@@ -54,7 +58,7 @@ def parse_args():
                       nargs=argparse.REMAINDER)
   parser.add_argument('--load_dir', dest='load_dir',
                       help='directory to load models', default="/srv/share/jyang375/models",
-                      nargs=argparse.REMAINDER)
+                      type=str)
   parser.add_argument('--cuda', dest='cuda',
                       help='whether use CUDA',
                       action='store_true')
@@ -196,7 +200,7 @@ if __name__ == '__main__':
   vis = args.vis
 
   if vis:
-    thresh = 0.0
+    thresh = 0.05
   else:
     thresh = 0.0
 
@@ -209,7 +213,7 @@ if __name__ == '__main__':
   dataset = roibatchLoader(roidb, ratio_list, ratio_index, args.batch_size, \
                         imdb.num_classes, training=False, normalize = False)
   dataloader = torch.utils.data.DataLoader(dataset, batch_size=args.batch_size,
-                            shuffle=False, num_workers=0,
+                            shuffle=False, num_workers=4,
                             pin_memory=True)
 
   data_iter = iter(dataloader)
@@ -274,7 +278,7 @@ if __name__ == '__main__':
             else:
               cls_boxes = pred_boxes[inds][:, j * 4:(j + 1) * 4]
 
-            cls_dets = torch.cat((cls_boxes, cls_scores), 1)
+            cls_dets = torch.cat((cls_boxes, cls_scores.unsqueeze(1)), 1)
             cls_dets = cls_dets[order]
             keep = nms(cls_dets, cfg.TEST.NMS)
             cls_dets = cls_dets[keep.view(-1).long()]
@@ -308,7 +312,7 @@ if __name__ == '__main__':
           #cv2.waitKey(0)
 
   with open(det_file, 'wb') as f:
-      cPickle.dump(all_boxes, f, cPickle.HIGHEST_PROTOCOL)
+      pickle.dump(all_boxes, f, pickle.HIGHEST_PROTOCOL)
 
   print('Evaluating detections')
   imdb.evaluate_detections(all_boxes, output_dir)

@@ -8,13 +8,14 @@ import torchvision.models as models
 from torch.autograd import Variable
 import numpy as np
 import torchvision.utils as vutils
-from model.utils.config import cfg
-from model.rpn.rpn_fpn import _RPN_FPN
-from model.roi_pooling.modules.roi_pool import _RoIPooling
-from model.roi_crop.modules.roi_crop import _RoICrop
-from model.roi_align.modules.roi_align import RoIAlignAvg
-from model.rpn.proposal_target_layer import _ProposalTargetLayer
-from model.utils.net_utils import _smooth_l1_loss, _crop_pool_layer, _affine_grid_gen, _affine_theta
+from model.utils.config import cfg    # 这个地方不能加lib.否则cfg又问题
+from lib.model.rpn.rpn_fpn import _RPN_FPN
+from lib.model.roi_pooling.modules.roi_pool import _RoIPooling
+from lib.model.roi_crop.modules.roi_crop import _RoICrop
+from lib.model.roi_align.modules.roi_align import RoIAlignAvg
+from lib.model.rpn.proposal_target_layer import _ProposalTargetLayer
+from lib.model.utils.net_utils import _smooth_l1_loss, _crop_pool_layer, _affine_grid_gen, _affine_theta
+from tensorboardX import SummaryWriter
 import time
 import pdb
 
@@ -107,8 +108,12 @@ class _FPN(nn.Module):
         img_area = im_info[0][0] * im_info[0][1]
         h = rois.data[:, 4] - rois.data[:, 2] + 1
         w = rois.data[:, 3] - rois.data[:, 1] + 1
-        roi_level = torch.log(torch.sqrt(h * w) / 224.0)
-        roi_level = torch.round(roi_level + 4)
+        roi_level = torch.log(torch.sqrt(h * w) / 224.0) / np.log(2)
+        roi_level = torch.floor(roi_level + 4)
+        # --------
+        # roi_level = torch.log(torch.sqrt(h * w) / 224.0)
+        # roi_level = torch.round(roi_level + 4)
+        # ------
         roi_level[roi_level < 2] = 2
         roi_level[roi_level > 5] = 5
         # roi_level.fill_(5)
@@ -116,9 +121,9 @@ class _FPN(nn.Module):
             # pdb.set_trace()
             # pooled_feat_anchor = _crop_pool_layer(base_feat, rois.view(-1, 5))
             # NOTE: need to add pyrmaid
-            grid_xy = _affine_grid_gen(rois, base_feat.size()[2:], self.grid_size)
+            grid_xy = _affine_grid_gen(rois, feat_maps.size()[2:], self.grid_size)  ##
             grid_yx = torch.stack([grid_xy.data[:,:,:,1], grid_xy.data[:,:,:,0]], 3).contiguous()
-            roi_pool_feat = self.RCNN_roi_crop(base_feat, Variable(grid_yx).detach())
+            roi_pool_feat = self.RCNN_roi_crop(feat_maps, Variable(grid_yx).detach()) ##
             if cfg.CROP_RESIZE_WITH_MAX_POOL:
                 roi_pool_feat = F.max_pool2d(roi_pool_feat, 2, 2)
 

@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # --------------------------------------------------------
 # Faster R-CNN
 # Copyright (c) 2015 Microsoft
@@ -13,7 +14,7 @@ import torch.nn as nn
 import numpy as np
 import numpy.random as npr
 from ..utils.config import cfg
-from bbox_transform import bbox_overlaps_batch, bbox_transform_batch
+from .bbox_transform import bbox_overlaps_batch, bbox_transform_batch
 import pdb
 
 class _ProposalTargetLayer(nn.Module):
@@ -195,7 +196,8 @@ class _ProposalTargetLayer(nn.Module):
             labels_batch[i].copy_(labels[i][keep_inds])
 
             # Clamp labels for the background RoIs to 0
-            labels_batch[i][fg_rois_per_this_image:] = 0
+            if fg_rois_per_this_image < rois_per_image:
+                labels_batch[i][fg_rois_per_this_image:] = 0
 
             rois_batch[i] = all_rois[i][keep_inds]
             rois_batch[i,:,0] = i

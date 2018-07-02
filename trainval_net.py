@@ -27,14 +27,19 @@ from datetime import datetime
 import torchvision.transforms as transforms
 from torch.utils.data.sampler import Sampler
 
-from roi_data_layer.roidb import combined_roidb
-from roi_data_layer.roibatchLoader import roibatchLoader
+from lib.roi_data_layer.roidb import combined_roidb
+from lib.roi_data_layer.roibatchLoader import roibatchLoader
 from model.utils.config import cfg, cfg_from_file, cfg_from_list, get_output_dir
-from model.utils.net_utils import weights_normal_init, save_net, load_net, \
+from lib.model.utils.net_utils import weights_normal_init, save_net, load_net, \
       adjust_learning_rate, save_checkpoint, clip_gradient
 
-from model.fpn.resnet import resnet
+from lib.model.fpn.resnet import resnet
 import pdb
+
+try:
+    xrange  # Python 2
+except NameError:
+    xrange = range  # Python 3
 
 def parse_args():
   """
@@ -61,9 +66,8 @@ def parse_args():
                       default=10000, type=int)
 
   parser.add_argument('--save_dir', dest='save_dir',
-                      help='directory to save models', default="/srv/share/jyang375/models",
-                      nargs=argparse.REMAINDER)
-  parser.add_argument('--num_workers', dest='num_workers',
+                      help='directory to save models', default="/srv/share/jyang375/models",)
+  parser.add_argument('--nw', dest='num_workers',
                       help='number of worker to load data',
                       default=0, type=int)
   parser.add_argument('--cuda', dest='cuda',
@@ -145,10 +149,12 @@ class sampler(Sampler):
     return iter(self.rand_num_view)
 
   def __len__(self):
-    return num_data
+    return self.num_data
 
-def _print(str, logger):
+def _print(str, logger=None):
   print(str)
+  if logger is None:
+      return
   logger.info(str)
 
 if __name__ == '__main__':
@@ -163,9 +169,9 @@ if __name__ == '__main__':
     # Set the logger
     logger = Logger('./logs')
 
-  logging.basicConfig(filename="logs/"+args.net+"_"+args.dataset+"_"+str(args.session)+".log",
-        filemode='w', level=logging.DEBUG)
-  logging.info(str(datetime.now()))
+  # logging.basicConfig(filename="logs/"+args.net+"_"+args.dataset+"_"+str(args.session)+".log",
+  #       filemode='w', level=logging.DEBUG)
+  # logging.info(str(datetime.now()))
 
   if args.dataset == "pascal_voc":
       args.imdb_name = "voc_2007_trainval"
@@ -199,7 +205,7 @@ if __name__ == '__main__':
 
   print('Using config:')
   pprint.pprint(cfg)
-  logging.info(cfg)
+  # logging.info(cfg)
   np.random.seed(cfg.RNG_SEED)
 
   #torch.backends.cudnn.benchmark = True
@@ -213,7 +219,8 @@ if __name__ == '__main__':
   imdb, roidb, ratio_list, ratio_index = combined_roidb(args.imdb_name)
   train_size = len(roidb)
 
-  _print('{:d} roidb entries'.format(len(roidb)), logging)
+  # _print('{:d} roidb entries'.format(len(roidb)), logging)
+  _print('{:d} roidb entries'.format(len(roidb)))
 
   output_dir = args.save_dir + "/" + args.net + "/" + args.dataset
   if not os.path.exists(output_dir):
@@ -286,7 +293,7 @@ if __name__ == '__main__':
   if args.resume:
     load_name = os.path.join(output_dir,
       'fpn_{}_{}_{}.pth'.format(args.checksession, args.checkepoch, args.checkpoint))
-    _print("loading checkpoint %s" % (load_name), logging)
+    _print("loading checkpoint %s" % (load_name),)
     checkpoint = torch.load(load_name)
     args.session = checkpoint['session']
     args.start_epoch = checkpoint['epoch']
@@ -295,7 +302,7 @@ if __name__ == '__main__':
     lr = optimizer.param_groups[0]['lr']
     if 'pooling_mode' in checkpoint.keys():
       cfg.POOLING_MODE = checkpoint['pooling_mode']
-    _print("loaded checkpoint %s" % (load_name), logging)
+    _print("loaded checkpoint %s" % (load_name), )
 
   if args.mGPUs:
     FPN = nn.DataParallel(FPN)
@@ -351,18 +358,18 @@ if __name__ == '__main__':
           fg_cnt = torch.sum(roi_labels.data.ne(0))
           bg_cnt = roi_labels.data.numel() - fg_cnt
         else:
-          loss_rpn_cls = RCNN_rpn.rpn_loss_cls.data[0]
-          loss_rpn_box = RCNN_rpn.rpn_loss_box.data[0]
+          loss_rpn_cls = rpn_loss_cls.data[0]
+          loss_rpn_box = rpn_loss_box.data[0]
           loss_rcnn_cls = RCNN_loss_cls.data[0]
           loss_rcnn_box = RCNN_loss_bbox.data[0]
           fg_cnt = torch.sum(roi_labels.data.ne(0))
           bg_cnt = roi_labels.data.numel() - fg_cnt
 
         _print("[session %d][epoch %2d][iter %4d] loss: %.4f, lr: %.2e" \
-                                % (args.session, epoch, step, loss_temp, lr), logging)
-        _print("\t\t\tfg/bg=(%d/%d), time cost: %f" % (fg_cnt, bg_cnt, end-start), logging)
+                                % (args.session, epoch, step, loss_temp, lr), )
+        _print("\t\t\tfg/bg=(%d/%d), time cost: %f" % (fg_cnt, bg_cnt, end-start), )
         _print("\t\t\trpn_cls: %.4f, rpn_box: %.4f, rcnn_cls: %.4f, rcnn_box %.4f" \
-                      % (loss_rpn_cls, loss_rpn_box, loss_rcnn_cls, loss_rcnn_box), logging)
+                      % (loss_rpn_cls, loss_rpn_box, loss_rcnn_cls, loss_rcnn_box), )
         if args.use_tfboard:
           info = {
             'loss': loss_temp,
@@ -397,7 +404,7 @@ if __name__ == '__main__':
         'pooling_mode': cfg.POOLING_MODE,
         'class_agnostic': args.class_agnostic,
       }, save_name)
-    _print('save model: {}'.format(save_name), logging)
+    _print('save model: {}'.format(save_name), )
 
     end = time.time()
     print(end - start)
