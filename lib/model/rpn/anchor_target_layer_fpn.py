@@ -13,7 +13,7 @@ import torch.nn as nn
 import numpy as np
 import numpy.random as npr
 
-from lib.model.utils.config import cfg
+from model.utils.config import cfg
 from .generate_anchors import generate_anchors, generate_anchors_all_pyramids
 from .bbox_transform import clip_boxes, bbox_overlaps_batch, bbox_transform_batch
 try:

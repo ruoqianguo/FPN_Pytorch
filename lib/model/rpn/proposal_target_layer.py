@@ -45,6 +45,7 @@ class _ProposalTargetLayer(nn.Module):
         num_images = 1
         rois_per_image = int(cfg.TRAIN.BATCH_SIZE / num_images)
         fg_rois_per_image = int(np.round(cfg.TRAIN.FG_FRACTION * rois_per_image))
+        fg_rois_per_image = 1 if fg_rois_per_image == 0 else fg_rois_per_image
 
         labels, rois, gt_assign, bbox_targets, bbox_inside_weights = self._sample_rois_pytorch(
             all_rois, gt_boxes, fg_rois_per_image,
@@ -187,6 +188,7 @@ class _ProposalTargetLayer(nn.Module):
                 bg_rois_per_this_image = rois_per_image
                 fg_rois_per_this_image = 0
             else:
+                print(i, overlaps[i], max_overlaps[i], gt_boxes[i])
                 raise ValueError("bg_num_rois = 0 and fg_num_rois = 0, this should not happen!")
 
             # The indices that we're selecting (both fg and bg)

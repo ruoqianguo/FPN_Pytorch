@@ -9,13 +9,12 @@ from torch.autograd import Variable
 import numpy as np
 import torchvision.utils as vutils
 from model.utils.config import cfg    # 这个地方不能加lib.否则cfg又问题
-from lib.model.rpn.rpn_fpn import _RPN_FPN
-from lib.model.roi_pooling.modules.roi_pool import _RoIPooling
-from lib.model.roi_crop.modules.roi_crop import _RoICrop
-from lib.model.roi_align.modules.roi_align import RoIAlignAvg
-from lib.model.rpn.proposal_target_layer import _ProposalTargetLayer
-from lib.model.utils.net_utils import _smooth_l1_loss, _crop_pool_layer, _affine_grid_gen, _affine_theta
-from tensorboardX import SummaryWriter
+from model.rpn.rpn_fpn import _RPN_FPN
+from model.roi_pooling.modules.roi_pool import _RoIPooling
+from model.roi_crop.modules.roi_crop import _RoICrop
+from model.roi_align.modules.roi_align import RoIAlignAvg
+from model.rpn.proposal_target_layer import _ProposalTargetLayer
+from model.utils.net_utils import _smooth_l1_loss, _crop_pool_layer, _affine_grid_gen, _affine_theta
 import time
 import pdb
 
@@ -237,6 +236,8 @@ class _FPN(nn.Module):
             rois_pos = Variable(rois[pos_id])
             rois = Variable(rois)
 
+        # print('before pooling, cfg', cfg.POOLING_MODE)
+        # print('before pooling, get_cfg', get_cfg().POOLING_MODE)
         # pooling features based on rois, output 14x14 map
         roi_pool_feat = self._PyramidRoI_Feat(mrcnn_feature_maps, rois, im_info)
 

@@ -13,7 +13,7 @@ import torch.nn as nn
 import numpy as np
 import math
 import yaml
-from lib.model.utils.config import cfg
+from model.utils.config import cfg
 from .generate_anchors import generate_anchors, generate_anchors_all_pyramids
 from .bbox_transform import bbox_transform_inv, clip_boxes, clip_boxes_batch
 from lib.model.nms.nms_wrapper import nms
