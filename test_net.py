@@ -29,7 +29,7 @@ from model.rpn.bbox_transform import clip_boxes
 from model.nms.nms_wrapper import nms
 from model.rpn.bbox_transform import bbox_transform_inv
 from model.utils.net_utils import vis_detections
-from model.fpn.resnet import resnet, get_res_cfg
+from model.fpn.resnet import resnet
 
 import pdb
 
