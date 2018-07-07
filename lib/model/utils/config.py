@@ -158,6 +158,8 @@ __C.TRAIN.USE_ALL_GT = True
 # Whether to tune the batch normalization parameters during training
 __C.TRAIN.BN_TRAIN = False
 
+# Crop images that have too small or too large aspect ratio
+__C.TRAIN.ASPECT_CROPPING = False
 #
 # Testing options
 #
