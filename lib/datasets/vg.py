@@ -14,7 +14,7 @@ import scipy.sparse
 import gzip
 import PIL
 import json
-from lib.datasets.vg_eval import vg_eval
+from datasets.vg_eval import vg_eval
 from model.utils.config import cfg
 import pickle
 import pdb
