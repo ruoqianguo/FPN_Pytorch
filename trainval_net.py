@@ -401,8 +401,8 @@ if __name__ == '__main__':
                     fg_cnt = torch.sum(roi_labels.data.ne(0))
                     bg_cnt = roi_labels.data.numel() - fg_cnt
 
-                _print("[session %d][epoch %2d][iter %4d] loss: %.4f, lr: %.2e" \
-                       % (args.session, epoch, step, loss_temp, lr), )
+                _print("[session %d][epoch %2d][iter %4d/%4d] loss: %.4f, lr: %.2e" \
+                       % (args.session, epoch, step, iters_per_epoch, loss_temp, lr), )
                 _print("\t\t\tfg/bg=(%d/%d), time cost: %f" % (fg_cnt, bg_cnt, end - start), )
                 _print("\t\t\trpn_cls: %.4f, rpn_box: %.4f, rcnn_cls: %.4f, rcnn_box %.4f" \
                        % (loss_rpn_cls, loss_rpn_box, loss_rcnn_cls, loss_rcnn_box), )
