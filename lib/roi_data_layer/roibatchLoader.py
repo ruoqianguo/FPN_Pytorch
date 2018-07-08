@@ -72,12 +72,12 @@ class roibatchLoader(data.Dataset):
     if self.training:
         np.random.shuffle(blobs['gt_boxes'])
         gt_boxes = torch.from_numpy(blobs['gt_boxes'])
-        if self.batch_size == 1:
-            data = data.permute(0, 3, 1, 2).contiguous().view(3, data_height, data_width)
-            im_info = im_info.view(3)
-            num_boxes = gt_boxes.size(0)
-
-            return data, im_info, gt_boxes, num_boxes, blobs['img_id']
+        # if self.batch_size == 1:
+        #     data = data.permute(0, 3, 1, 2).contiguous().view(3, data_height, data_width)
+        #     im_info = im_info.view(3)
+        #     num_boxes = gt_boxes.size(0)
+        #
+        #     return data, im_info, gt_boxes, num_boxes, blobs['img_id']
 
         ########################################################
         # padding the input image to fixed size for each group #
