@@ -30,7 +30,37 @@ Res-101    | 1  GTX 1080 (Ti) | 2 | 1e-3 | 10  | 12  |  0.22 hr | 6137MB | 75.7
 | ------- | ---------------- | ---------- | ---- | -------- | --------- | ----------- | ---------- | ---- |
 | Res-101 | 1  GTX 1080 (Ti) | 1          | 1e-3 | 10       | 12        | \           | 9011MB     | 80.5 |
 
-##**Usage**
+## Preparation
+
+First of all, clone the code
+
+```
+git clone https://github.com/guoruoqian/FPN_Pytorch.git
+```
+
+Then, create a folder:
+
+```
+cd FPN_Pytorch && mkdir data
+```
+
+### prerequisites
+
+- Python 2.7 or 3.6
+- Pytorch 0.2.0 or higher
+- CUDA 8.0 or higher
+- tensorboardX
+
+### Data Preparation
+
+* VOC2007: Please follow the instructions in [py-faster-rcnn](https://github.com/rbgirshick/py-faster-rcnn#beyond-the-demo-installation-for-training-and-testing-models) to prepare VOC datasets. Actually, you can refer to any others. After downloading the data, creat softlinks in the folder data/.
+* VOC 07 + 12: Please follow the instructions in [YuwenXiong/py-R-FCN](https://github.com/YuwenXiong/py-R-FCN/blob/master/README.md#preparation-for-training--testing) . **I think this instruction is more helpful to prepare VOC datasets.**
+
+### Pretrained Model & Compilation
+
+​	Please follow the instructions in [Pretrained Model](https://github.com/jwyang/faster-rcnn.pytorch#pretrained-model) and [Compilation](https://github.com/jwyang/faster-rcnn.pytorch#compilation).
+
+##Usage
 
 train voc2007:
 
