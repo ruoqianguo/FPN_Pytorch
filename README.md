@@ -65,7 +65,7 @@ cd FPN_Pytorch && mkdir data
 train voc2007:
 
 ```
-CUDA_VISIBLE_DEVICES=3 python3 trainval_net.py exp_name --dataset pascal_voc --net res101 --bs 2 --num_workers 4 --lr 1e-3 --epochs 12 --save_dir weights --cuda --use_tfboard True
+CUDA_VISIBLE_DEVICES=3 python3 trainval_net.py exp_name --dataset pascal_voc --net res101 --bs 2 --nw 4 --lr 1e-3 --epochs 12 --save_dir weights --cuda --use_tfboard True
 ```
 
 test voc2007:
@@ -77,6 +77,6 @@ CUDA_VISIBLE_DEVICES=3 python3 test_net.py exp_name --dataset pascal_voc --net r
 train voc07+12:
 
 ```
-CUDA_VISIBLE_DEVICES=3 python3 trainval_net.py exp_name2 --dataset pascal_voc_0712 --net res101 --bs 2 --num_workers 4 --lr 1e-3 --epochs 12 --save_dir weights --cuda --use_tfboard True
+CUDA_VISIBLE_DEVICES=3 python3 trainval_net.py exp_name2 --dataset pascal_voc_0712 --net res101 --bs 2 --nw 4 --lr 1e-3 --epochs 12 --save_dir weights --cuda --use_tfboard True
 ```
 
